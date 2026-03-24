@@ -12,6 +12,7 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import SidebarUserButton from "@/components/sidebar-user-button";
+import { ClipboardListIcon, BrainCircuitIcon } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { LogInIcon } from "lucide-react";
@@ -41,7 +42,7 @@ export default function Layout() {
           <Sidebar collapsible="icon" className="overflow-hidden">
             <SidebarHeader className="flex-row">
               <SidebarTrigger className="size-8" />
-              <span className="text-xl text-nowrap">Jobs Board</span>
+              <span className="text-lg text-nowrap">Jobs Board</span>
             </SidebarHeader>
 
             <SidebarContent>
@@ -59,14 +60,32 @@ export default function Layout() {
                   </SidebarMenuItem>
                 )}
               </SidebarMenu>
+
+              {data && data.user.userRole === "applicant" && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton>
+                    <Link to="/app" className="flex items-center gap-3">
+                      <ClipboardListIcon /> <span>Job Board</span>
+                    </Link>
+                  </SidebarMenuButton>
+
+                  <SidebarMenuButton>
+                    <Link to="/app" className="flex items-center gap-3">
+                      <BrainCircuitIcon /> <span>AI Search</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarContent>
 
             <SidebarFooter>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarUserButton />
-                </SidebarMenuItem>
-              </SidebarMenu>
+              {data && (
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarUserButton />
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              )}
             </SidebarFooter>
           </Sidebar>
 

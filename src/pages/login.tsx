@@ -3,6 +3,13 @@ import { Eye, EyeOff, Mail, Lock, User, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useNavigate } from "react-router";
 import { Navigate } from "react-router";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Login = () => {
   const { data } = authClient.useSession();
@@ -15,16 +22,19 @@ const Login = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [userRole, setUserRole] = useState<"employer" | "applicant">(
+    "applicant",
+  );
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
     setIsLoading(true);
-    if (!name || !email || !password) {
-      alert("Fields are empty!");
-      return;
-    }
+
     if (operation === "login") {
+      if (!email || !password) {
+        alert("Fields are empty!");
+        return;
+      }
       await authClient.signIn.email(
         {
           email: email,
@@ -44,11 +54,16 @@ const Login = () => {
         },
       );
     } else {
+      if (!name || !email || !password) {
+        alert("Fields are empty!");
+        return;
+      }
       await authClient.signUp.email(
         {
           name: name,
           email: email,
           password: password,
+          userRole: userRole,
         },
         {
           onRequest: () => setIsLoading(true),
@@ -153,6 +168,27 @@ const Login = () => {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+
+            {operation === "sign-up" && (
+              <div>
+                <Select
+                  value={userRole}
+                  onValueChange={(e) =>
+                    setUserRole(e as "employer" | "applicant")
+                  }
+                >
+                  <SelectTrigger id="role" className="w-full">
+                    <SelectValue placeholder="Select your role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="employer">Employer (Hiring)</SelectItem>
+                    <SelectItem value="applicant">
+                      Applicant (Looking for jobs)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           <button

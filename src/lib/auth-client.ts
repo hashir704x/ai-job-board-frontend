@@ -1,4 +1,5 @@
 import { createAuthClient } from "better-auth/react";
+import { inferAdditionalFields } from "better-auth/client/plugins";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 if (!backendUrl) {
@@ -10,4 +11,11 @@ export const authClient = createAuthClient({
   fetchOptions: {
     credentials: "include",
   },
+  plugins: [
+    inferAdditionalFields({
+      user: {
+        userRole: { type: "string" },
+      },
+    }),
+  ],
 });
