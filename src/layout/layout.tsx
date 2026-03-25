@@ -12,7 +12,11 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import SidebarUserButton from "@/components/sidebar-user-button";
-import { ClipboardListIcon, BrainCircuitIcon } from "lucide-react";
+import {
+  ClipboardListIcon,
+  BrainCircuitIcon,
+  LayoutDashboard,
+} from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { LogInIcon } from "lucide-react";
@@ -61,21 +65,38 @@ export default function Layout() {
                 )}
               </SidebarMenu>
 
-              {data && data.user.userRole === "applicant" && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton>
-                    <Link to="/app" className="flex items-center gap-3">
-                      <ClipboardListIcon /> <span>Job Board</span>
-                    </Link>
-                  </SidebarMenuButton>
+              <SidebarMenuItem>
+                <SidebarMenuButton>
+                  <Link
+                    to="/"
+                    className="flex items-center gap-3 cursor-pointer w-full"
+                  >
+                    <ClipboardListIcon /> <span>Job Board</span>
+                  </Link>
+                </SidebarMenuButton>
 
-                  <SidebarMenuButton>
-                    <Link to="/app" className="flex items-center gap-3">
-                      <BrainCircuitIcon /> <span>AI Search</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )}
+                {data && (
+                  <div>
+                    <SidebarMenuButton>
+                      <Link
+                        to="/app/ai-search"
+                        className="flex items-center gap-3 cursor-pointer w-full"
+                      >
+                        <BrainCircuitIcon /> <span>AI Search</span>
+                      </Link>
+                    </SidebarMenuButton>
+
+                    <SidebarMenuButton>
+                      <Link
+                        to="/app/employer-dashboard"
+                        className="flex items-center gap-3  cursor-pointer w-full"
+                      >
+                        <LayoutDashboard /> <span>Employer Dashboard</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </div>
+                )}
+              </SidebarMenuItem>
             </SidebarContent>
 
             <SidebarFooter>
