@@ -8,6 +8,18 @@ import Layout from "./layout/layout";
 import ProtectedLayout from "./layout/protected-layout";
 import EmployerDashboard from "./pages/employer-dashboard";
 import CreateOrganization from "./pages/create-organization";
+import CreateJob from "./pages/create-job";
+
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 1,
+    },
+  },
+});
 
 const router = createBrowserRouter([
   {
@@ -38,7 +50,11 @@ const router = createBrowserRouter([
           {
             path: "create-organization",
             element: <CreateOrganization />,
-          }
+          },
+          {
+            path: "create-job",
+            element: <CreateJob />,
+          },
         ],
       },
     ],
@@ -50,5 +66,9 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
 }
