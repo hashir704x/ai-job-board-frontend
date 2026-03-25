@@ -12,6 +12,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { useMutation } from "@tanstack/react-query";
+
+import { createJob } from "@/lib/api-functions";
+
+type WageInterval = "hourly" | "yearly";
+type LocationRequirement = "in-office" | "hybrid" | "remote";
+type ExperienceLevel = "junior" | "senior" | "mid-level";
+type JobListingStatus = "draft" | "delisted" | "published";
+type JobListingType = "internship" | "part-time" | "full-time";
+
 export default function CreateJob() {
   const { data } = authClient.useSession();
 
@@ -31,42 +41,47 @@ export default function CreateJob() {
     );
   }
 
-  type WageInterval = "hourly" | "yearly";
-  type LocationRequirement = "in-office" | "hybrid" | "remote";
-  type ExperienceLevel = "junior" | "senior" | "mid-level";
-  type JobListingStatus = "draft" | "delisted" | "published";
-  type JobListingType = "internship" | "part-time" | "full-time";
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [wage, setWage] = useState(""); // optional integer
-  const [wageInterval, setWageInterval] = useState<WageInterval | "">("");
-  const [stateAbbreviation, setStateAbbreviation] = useState("");
-  const [city, setCity] = useState("");
+  const [wageInterval, setWageInterval] = useState<WageInterval>("hourly");
+  // const [stateAbbreviation, setStateAbbreviation] = useState("");
+  // const [city, setCity] = useState("");
   const [isFeatured, setIsFeatured] = useState(false);
 
   const [locationRequirement, setLocationRequirement] =
     useState<LocationRequirement>("remote");
   const [status, setStatus] = useState<JobListingStatus>("draft");
-  const [type, setType] = useState<JobListingType | "">("");
+  const [type, setType] = useState<JobListingType>("full-time");
   const [experienceLevel, setExperienceLevel] =
     useState<ExperienceLevel>("mid-level");
 
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate: createJobMutation, isPending: isCreatingJob } = useMutation({
+    mutationFn: async () => {
+      const values = submitValues();
+      return await createJob(values);
+    },
+    onSuccess: () => {
+      alert("Job created successfully");
+    },
+    onError: (error) => {
+      console.error(error);
+      alert(error.message);
+    },
+  });
 
   const submitValues = () => {
     const payload = {
-      organizationId: data.session.activeOrganizationId,
       title: title.trim(),
       description: description.trim(),
-      wage: wage ? Number(wage) : undefined,
-      wageInterval: wageInterval || undefined,
-      stateAbbreviation: stateAbbreviation.trim() || undefined,
-      city: city.trim() || undefined,
+      wage: Number(wage),
+      wageInterval: wageInterval,
+      // stateAbbreviation: stateAbbreviation.trim() || undefined,
+      // city: city.trim() || undefined,
       isFeatured,
       locationRequirement,
       status,
-      type: type || undefined,
+      type: type,
       experienceLevel,
     };
 
@@ -85,16 +100,7 @@ export default function CreateJob() {
       alert("Select wage interval when wage is set");
       return;
     }
-
-    setIsLoading(true);
-    try {
-      const values = submitValues();
-
-      // TODO: send `values` to backend (for now you can inspect it here)
-      console.log("Create job values:", values);
-    } finally {
-      setIsLoading(false);
-    }
+    createJobMutation();
   };
 
   return (
@@ -135,9 +141,9 @@ export default function CreateJob() {
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="delisted">Delisted</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
+                <SelectItem value="draft">draft</SelectItem>
+                <SelectItem value="delisted">delisted</SelectItem>
+                <SelectItem value="published">published</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -152,9 +158,9 @@ export default function CreateJob() {
                 <SelectValue placeholder="Select experience level" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="junior">Junior</SelectItem>
-                <SelectItem value="mid-level">Mid-level</SelectItem>
-                <SelectItem value="senior">Senior</SelectItem>
+                <SelectItem value="junior">junior</SelectItem>
+                <SelectItem value="mid-level">mid-level</SelectItem>
+                <SelectItem value="senior">senior</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -163,7 +169,7 @@ export default function CreateJob() {
             <Label htmlFor="type">Job Type (optional)</Label>
             <Select
               value={type}
-              onValueChange={(v) => setType(v as JobListingType | "")}
+              onValueChange={(v) => setType(v as JobListingType)}
             >
               <SelectTrigger id="type">
                 <SelectValue placeholder="Select job type" />
@@ -206,7 +212,7 @@ export default function CreateJob() {
             <Label htmlFor="wageInterval">Wage Interval</Label>
             <Select
               value={wageInterval}
-              onValueChange={(v) => setWageInterval(v as WageInterval | "")}
+              onValueChange={(v) => setWageInterval(v as WageInterval)}
             >
               <SelectTrigger id="wageInterval">
                 <SelectValue placeholder="Select wage interval" />
@@ -220,9 +226,7 @@ export default function CreateJob() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="locationRequirement">
-              Location Requirement
-            </Label>
+            <Label htmlFor="locationRequirement">Location Requirement</Label>
             <Select
               value={locationRequirement}
               onValueChange={(v) =>
@@ -256,7 +260,7 @@ export default function CreateJob() {
             </div>
           </div>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="stateAbbreviation">State (optional)</Label>
             <Input
               id="stateAbbreviation"
@@ -274,7 +278,7 @@ export default function CreateJob() {
               onChange={(e) => setCity(e.target.value)}
               placeholder="e.g. San Francisco"
             />
-          </div>
+          </div> */}
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-2">
@@ -284,8 +288,8 @@ export default function CreateJob() {
           >
             Back
           </Link>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Creating..." : "Create Job"}
+          <Button type="submit" disabled={isCreatingJob}>
+            {isCreatingJob ? "Creating..." : "Create Job"}
           </Button>
         </div>
       </form>

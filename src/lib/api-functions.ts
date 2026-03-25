@@ -20,3 +20,27 @@ export async function getJobsForOrganization(): Promise<
   const data = await response.json();
   return data.data;
 }
+
+type CreateJobPayload = {
+  title: string;
+  description: string;
+  wage: number | undefined;
+  wageInterval: "hourly" | "yearly";
+  locationRequirement: "in-office" | "hybrid" | "remote";
+  status: "draft" | "delisted" | "published";
+  type: "internship" | "part-time" | "full-time";
+  experienceLevel: "junior" | "senior" | "mid-level";
+};
+
+export async function createJob(payload: CreateJobPayload) {
+  const response = await fetch(`${backendUrl}/api/jobs/create-job`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+  return data.data;
+}

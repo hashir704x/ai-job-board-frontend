@@ -12,6 +12,9 @@ export default function JobsList({
     queryFn: getJobsForOrganization,
   });
 
+
+  console.log("jobs list data", data);
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-center">Jobs List</h1>
@@ -43,7 +46,7 @@ export default function JobsList({
               <p className="text-sm text-gray-500">{job.type}</p>
               <p className="text-sm text-gray-500">{job.status}</p>
               <p className="text-sm text-gray-500">
-                {job.createdAt.toLocaleDateString()}
+                {new Date(job.createdAt).toLocaleDateString()}
               </p>
             </div>
           ))}
