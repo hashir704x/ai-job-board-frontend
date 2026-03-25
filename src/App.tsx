@@ -11,6 +11,7 @@ import CreateOrganization from "./pages/create-organization";
 import CreateJob from "./pages/create-job";
 
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import JobDetails from "./pages/job-details";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
           {
             path: "create-job",
             element: <CreateJob />,
+          },
+          {
+            path: "job-details/:id",
+            element: <JobDetails />,
           },
         ],
       },

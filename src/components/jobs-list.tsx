@@ -12,9 +12,6 @@ export default function JobsList({
     queryFn: getJobsForOrganization,
   });
 
-
-  console.log("jobs list data", data);
-
   return (
     <div>
       <h1 className="text-2xl font-bold text-center">Jobs List</h1>
@@ -27,19 +24,19 @@ export default function JobsList({
           Error: {error.message}
         </div>
       )}
+
+      <Link
+        to="/app/create-job"
+        className="text-blue-500 bg-blue-500/10 px-4 py-2 rounded-md border"
+      >
+        Create job
+      </Link>
       {data?.length === 0 ? (
         <div className="text-center text-2xl flex flex-col items-center justify-center gap-4">
           <h1 className="text-2xl font-bold">No jobs found</h1>
-
-          <Link
-            to="/app/create-job"
-            className="text-blue-500 bg-blue-500/10 px-4 py-2 rounded-md"
-          >
-            Create job
-          </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
           {data?.map((job) => (
             <div key={job.id} className="border p-4 rounded-md">
               <h2 className="text-lg font-bold">{job.title}</h2>

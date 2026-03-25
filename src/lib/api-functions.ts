@@ -32,7 +32,7 @@ type CreateJobPayload = {
   experienceLevel: "junior" | "senior" | "mid-level";
 };
 
-export async function createJob(payload: CreateJobPayload) {
+export async function createJob(payload: CreateJobPayload): Promise<string> {
   const response = await fetch(`${backendUrl}/api/jobs/create-job`, {
     method: "POST",
     credentials: "include",
@@ -42,5 +42,8 @@ export async function createJob(payload: CreateJobPayload) {
     body: JSON.stringify(payload),
   });
   const data = await response.json();
-  return data.data;
+  if (!data.success) {
+    throw new Error(data.error);
+  }
+  return data.data.id;
 }

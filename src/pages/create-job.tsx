@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 
 import { createJob } from "@/lib/api-functions";
+import { useQueryClient } from "@tanstack/react-query";
 
 type WageInterval = "hourly" | "yearly";
 type LocationRequirement = "in-office" | "hybrid" | "remote";
@@ -24,8 +25,11 @@ type JobListingType = "internship" | "part-time" | "full-time";
 
 export default function CreateJob() {
   const { data } = authClient.useSession();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const organizationId = data?.session.activeOrganizationId;
 
-  if (!data?.session.activeOrganizationId) {
+  if (!organizationId) {
     return (
       <div>
         <h1 className="text-2xl font-bold">
@@ -61,12 +65,15 @@ export default function CreateJob() {
       const values = submitValues();
       return await createJob(values);
     },
-    onSuccess: () => {
-      alert("Job created successfully");
+    onSuccess: (id: string) => {
+      queryClient.invalidateQueries({
+        queryKey: ["jobs", organizationId],
+      });
+      navigate(`/app/job-details/${id}`);
     },
     onError: (error) => {
-      console.error(error);
-      alert(error.message);
+      console.error("Error creating job", error);
+      alert(error.message || "Failed to create job");
     },
   });
 
