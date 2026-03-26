@@ -11,7 +11,6 @@ export default function CreateOrganization() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Helper to sync slug with name (e.g., "My Co" -> "my-co")
   const handleNameChange = (value: string) => {
     setName(value);
     setSlug(
@@ -39,8 +38,8 @@ export default function CreateOrganization() {
       {
         onRequest: () => setIsLoading(true),
         onSuccess: () => {
-          // navigate("/app/employer");
-          alert("Organization created successfully");
+          navigate("/app/employer-dashboard");
+
           setIsLoading(false);
         },
         onError: (ctx) => {

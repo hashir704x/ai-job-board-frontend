@@ -32,7 +32,7 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "app",
+        path: "app",  
         element: <ProtectedLayout />,
         children: [
           { index: true, element: <div>App</div> },

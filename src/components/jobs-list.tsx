@@ -31,6 +31,7 @@ export default function JobsList({
       >
         Create job
       </Link>
+      
       {data?.length === 0 ? (
         <div className="text-center text-2xl flex flex-col items-center justify-center gap-4">
           <h1 className="text-2xl font-bold">No jobs found</h1>
