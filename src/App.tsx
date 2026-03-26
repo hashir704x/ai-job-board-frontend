@@ -12,6 +12,7 @@ import CreateJob from "./pages/create-job";
 
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import JobDetails from "./pages/job-details";
+import UpdateJob from "./pages/update-job";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
           {
             path: "job-details/:id",
             element: <JobDetails />,
+          },
+          {
+            path: "update-job/:id",
+            element: <UpdateJob />,
           },
         ],
       },

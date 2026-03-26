@@ -39,14 +39,14 @@ export default function JobsList({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
           {data?.map((job) => (
-            <div key={job.id} className="border p-4 rounded-md">
+            <Link to={`/app/job-details/${job.id}`} key={job.id} className="border p-4 rounded-md">
               <h2 className="text-lg font-bold">{job.title}</h2>
               <p className="text-sm text-gray-500">{job.type}</p>
               <p className="text-sm text-gray-500">{job.status}</p>
               <p className="text-sm text-gray-500">
                 {new Date(job.createdAt).toLocaleDateString()}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       )}
