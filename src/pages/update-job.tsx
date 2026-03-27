@@ -5,6 +5,8 @@ import { getJobById, updateJob } from "@/lib/api-functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import PageShell from "@/components/page-shell";
+import PageLoader from "@/components/loading/page-loader";
 import {
   Select,
   SelectContent,
@@ -13,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { authClient } from "@/lib/auth-client";
+import { Loader2 } from "lucide-react";
 
 type UpdateJobPayload = {
   title?: string;
@@ -137,7 +140,7 @@ export default function UpdateJob() {
       await updateJob(id, payload);
     },
     onSuccess: async () => {
-       queryClient.invalidateQueries({ queryKey: ["get-job-by-id", id] });
+      queryClient.invalidateQueries({ queryKey: ["get-job-by-id", id] });
       queryClient.invalidateQueries({ queryKey: ["jobs", organizationId] });
       navigate(`/app/job-details/${id}`, { replace: true });
     },
@@ -149,72 +152,67 @@ export default function UpdateJob() {
 
   if (!id) {
     return (
-      <div className="p-4">
-        <div className="max-w-3xl mx-auto border rounded-xl p-6 bg-card space-y-2">
-          <div className="text-lg font-semibold">Update job</div>
-          <div className="text-sm text-muted-foreground">
-            Missing job id in the URL.
-          </div>
+      <PageShell
+        size="md"
+        title="Update job"
+        description="Missing job id in the URL."
+        actions={
           <Link to="/app/employer-dashboard">
             <Button variant="outline">Back</Button>
           </Link>
+        }
+      >
+        <div className="border rounded-xl p-6 bg-card">
+          <div className="text-sm text-muted-foreground">Nothing to update.</div>
         </div>
-      </div>
+      </PageShell>
     );
   }
 
   if (isPending) {
-    return (
-      <div className="p-4">
-        <div className="max-w-3xl mx-auto border rounded-xl p-6 bg-card">
-          <div className="text-center text-2xl animate-pulse">
-            Loading job...
-          </div>
-        </div>
-      </div>
-    );
+    return <PageLoader title="Update job" message="Loading job..." size="md" />;
   }
 
   if (error) {
     return (
-      <div className="p-4">
-        <div className="max-w-3xl mx-auto border rounded-xl p-6 bg-card space-y-3">
-          <div className="text-xl font-semibold text-red-500">
-            Error loading job
-          </div>
-          <div className="text-sm text-muted-foreground">{error.message}</div>
+      <PageShell
+        size="md"
+        title="Error loading job"
+        description={error.message}
+        actions={
           <Link to="/app/employer-dashboard">
             <Button variant="outline">Back</Button>
           </Link>
+        }
+      >
+        <div className="border rounded-xl p-6 bg-card">
+          <div className="text-sm text-muted-foreground">Please try again.</div>
         </div>
-      </div>
+      </PageShell>
     );
   }
 
   return (
-    <div className="p-4">
-      <div className="max-w-3xl mx-auto space-y-4">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold">Update Job</h1>
-            <div className="text-sm text-muted-foreground">
-              Job ID: <span className="font-mono">{id}</span>
-            </div>
-          </div>
-          <Link to={`/app/job-details/${id}`}>
-            <Button variant="outline">Back</Button>
-          </Link>
-        </div>
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            mutation.mutate();
-          }}
-          className="border rounded-xl bg-card p-6 space-y-5"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2 md:col-span-2">
+    <PageShell
+      size="md"
+      title="Update job"
+      description={`Job ID: ${id}`}
+      actions={
+        <Link to={`/app/job-details/${id}`}>
+          <Button variant="outline">Back</Button>
+        </Link>
+      }
+    >
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          mutation.mutate();
+        }}
+        className="border rounded-xl bg-card p-6 space-y-6"
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="space-y-2">
               <Label htmlFor="title">Job Title</Label>
               <Input
                 id="title"
@@ -224,139 +222,167 @@ export default function UpdateJob() {
               />
             </div>
 
-            <div className="space-y-2 md:col-span-2">
+            <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <textarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
-                className="min-h-[140px] w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="min-h-[180px] w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="wage">Wage</Label>
-              <Input
-                id="wage"
-                type="number"
-                value={wage}
-                onChange={(e) => setWage(e.target.value)}
-              />
-              <div className="text-xs text-muted-foreground">
-                Leave it unchanged to not update wage.
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="type">Type</Label>
+                <Select
+                  value={type}
+                  onValueChange={(v) =>
+                    setType(v as "internship" | "part-time" | "full-time")
+                  }
+                >
+                  <SelectTrigger id="type" className="w-full">
+                    <SelectValue placeholder="Select job type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="internship">Internship</SelectItem>
+                    <SelectItem value="part-time">Part-time</SelectItem>
+                    <SelectItem value="full-time">Full-time</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="wageInterval">Wage Interval</Label>
-              <Select
-                value={wageInterval}
-                onValueChange={(v) => setWageInterval(v as "hourly" | "yearly")}
-              >
-                <SelectTrigger id="wageInterval" className="w-full">
-                  <SelectValue placeholder="Select wage interval" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="hourly">Hourly</SelectItem>
-                  <SelectItem value="yearly">Yearly</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="locationRequirement">Location Requirement</Label>
-              <Select
-                value={locationRequirement}
-                onValueChange={(v) =>
-                  setLocationRequirement(v as "in-office" | "hybrid" | "remote")
-                }
-              >
-                <SelectTrigger id="locationRequirement" className="w-full">
-                  <SelectValue placeholder="Select location requirement" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="in-office">In-office</SelectItem>
-                  <SelectItem value="hybrid">Hybrid</SelectItem>
-                  <SelectItem value="remote">Remote</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={status}
-                onValueChange={(v) =>
-                  setStatus(v as "draft" | "delisted" | "published")
-                }
-              >
-                <SelectTrigger id="status" className="w-full">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="delisted">Delisted</SelectItem>
-                  <SelectItem value="published">Published</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="type">Type</Label>
-              <Select
-                value={type}
-                onValueChange={(v) =>
-                  setType(v as "internship" | "part-time" | "full-time")
-                }
-              >
-                <SelectTrigger id="type" className="w-full">
-                  <SelectValue placeholder="Select job type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="internship">Internship</SelectItem>
-                  <SelectItem value="part-time">Part-time</SelectItem>
-                  <SelectItem value="full-time">Full-time</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="experienceLevel">Experience Level</Label>
-              <Select
-                value={experienceLevel}
-                onValueChange={(v) =>
-                  setExperienceLevel(v as "junior" | "senior" | "mid-level")
-                }
-              >
-                <SelectTrigger id="experienceLevel" className="w-full">
-                  <SelectValue placeholder="Select experience level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="junior">Junior</SelectItem>
-                  <SelectItem value="mid-level">Mid-level</SelectItem>
-                  <SelectItem value="senior">Senior</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <Label htmlFor="experienceLevel">Experience Level</Label>
+                <Select
+                  value={experienceLevel}
+                  onValueChange={(v) =>
+                    setExperienceLevel(v as "junior" | "senior" | "mid-level")
+                  }
+                >
+                  <SelectTrigger id="experienceLevel" className="w-full">
+                    <SelectValue placeholder="Select experience level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="junior">Junior</SelectItem>
+                    <SelectItem value="mid-level">Mid-level</SelectItem>
+                    <SelectItem value="senior">Senior</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
+          <div className="space-y-6">
+            <div className="rounded-xl border bg-background p-4 space-y-4">
+              <div className="space-y-1">
+                <div className="text-sm font-semibold">Settings</div>
+                <div className="text-xs text-muted-foreground">
+                  These fields update only if you changed them.
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  value={status}
+                  onValueChange={(v) =>
+                    setStatus(v as "draft" | "delisted" | "published")
+                  }
+                >
+                  <SelectTrigger id="status" className="w-full">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="delisted">Delisted</SelectItem>
+                    <SelectItem value="published">Published</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="locationRequirement">Location Requirement</Label>
+                <Select
+                  value={locationRequirement}
+                  onValueChange={(v) =>
+                    setLocationRequirement(v as "in-office" | "hybrid" | "remote")
+                  }
+                >
+                  <SelectTrigger id="locationRequirement" className="w-full">
+                    <SelectValue placeholder="Select location requirement" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="in-office">In-office</SelectItem>
+                    <SelectItem value="hybrid">Hybrid</SelectItem>
+                    <SelectItem value="remote">Remote</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="rounded-xl border bg-background p-4 space-y-4">
+              <div className="space-y-1">
+                <div className="text-sm font-semibold">Compensation</div>
+                <div className="text-xs text-muted-foreground">
+                  Leave unchanged to not update wage.
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="wage">Wage</Label>
+                <Input
+                  id="wage"
+                  type="number"
+                  value={wage}
+                  onChange={(e) => setWage(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="wageInterval">Wage Interval</Label>
+                <Select
+                  value={wageInterval}
+                  onValueChange={(v) => setWageInterval(v as "hourly" | "yearly")}
+                >
+                  <SelectTrigger id="wageInterval" className="w-full">
+                    <SelectValue placeholder="Select wage interval" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="hourly">Hourly</SelectItem>
+                    <SelectItem value="yearly">Yearly</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </div>
+
           {mutation.isError && (
-            <div className="text-sm text-red-500">
+            <div className="text-sm text-destructive">
               {(mutation.error as Error).message}
             </div>
           )}
 
-          <div className="flex items-center justify-end gap-3 pt-2">
+          <div className="sticky bottom-4">
+            <div className="rounded-xl border bg-card/95 backdrop-blur-sm p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="text-xs text-muted-foreground">
+                {hasChanges ? "Ready to update." : "No changes to update."}
+              </div>
+              <div className="flex items-center justify-end gap-3">
             <Link
               to={`/app/job-details/${id}`}
-              className="text-sm text-blue-500 bg-blue-500/10 px-3 py-2 rounded-md"
+              className="text-sm text-primary bg-primary/10 px-3 py-2 rounded-md transition-colors hover:bg-primary/15"
             >
               Cancel
             </Link>
-            <Button type="submit" disabled={mutation.isPending || !hasChanges}>
-              {mutation.isPending ? "Updating..." : "Update Job"}
+                <Button type="submit" disabled={mutation.isPending || !hasChanges}>
+                  {mutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {mutation.isPending ? "Updating..." : "Update Job"}
             </Button>
+          </div>
+            </div>
           </div>
 
           {!hasChanges && (
@@ -364,8 +390,7 @@ export default function UpdateJob() {
               No changes to update.
             </div>
           )}
-        </form>
-      </div>
-    </div>
+      </form>
+    </PageShell>
   );
 }

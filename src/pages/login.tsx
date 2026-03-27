@@ -72,30 +72,30 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-150 w-full items-center justify-center p-4 bg-slate-50/50">
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+    <div className="flex min-h-[calc(100vh-2rem)] w-full items-center justify-center p-4 bg-background transition-colors duration-300">
+      <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-sm">
         <div className="mb-8 space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            Create an account
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            {operation === "login" ? "Welcome back" : "Create an account"}
           </h1>
-          <p className="text-sm text-slate-500">
-            Enter your details to get started.
+          <p className="text-sm text-muted-foreground">
+            {operation === "login"
+              ? "Login to continue."
+              : "Enter your details to get started."}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name Field */}
-
           {operation === "sign-up" && (
             <div className="space-y-2">
               <label
-                className="text-sm font-medium text-slate-700"
+                className="text-sm font-medium text-foreground"
                 htmlFor="name"
               >
                 Full Name
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <input
                   id="name"
                   type="text"
@@ -103,22 +103,21 @@ const Login = () => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
                   required
-                  className="w-full rounded-lg border border-slate-200 bg-transparent py-2.5 pl-10 pr-4 text-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 placeholder:text-slate-400"
+                  className="w-full rounded-lg border border-input bg-transparent py-2.5 pl-10 pr-4 text-sm transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 />
               </div>
             </div>
           )}
 
-          {/* Email Field */}
           <div className="space-y-2">
             <label
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground"
               htmlFor="email"
             >
               Email Address
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <input
                 id="email"
                 type="email"
@@ -126,21 +125,20 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
                 required
-                className="w-full rounded-lg border border-slate-200 bg-transparent py-2.5 pl-10 pr-4 text-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10"
+                className="w-full rounded-lg border border-input bg-transparent py-2.5 pl-10 pr-4 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               />
             </div>
           </div>
 
-          {/* Password Field */}
           <div className="space-y-2">
             <label
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground"
               htmlFor="password"
             >
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <input
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -148,12 +146,12 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 required
-                className="w-full rounded-lg border border-slate-200 bg-transparent py-2.5 pl-10 pr-12 text-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10"
+                className="w-full rounded-lg border border-input bg-transparent py-2.5 pl-10 pr-12 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+                className="absolute right-3 top-3 text-muted-foreground transition-colors hover:text-foreground"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -163,22 +161,30 @@ const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 py-2.5 text-sm font-semibold text-white transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-70"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 active:scale-[0.98] disabled:opacity-70"
           >
             {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
             {operation === "sign-up" ? "Create Account" : "Login"}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-slate-500 cursor-pointer">
+        <div className="mt-6 text-center text-sm text-muted-foreground">
           {operation === "login" ? (
-            <span onClick={() => setOperation("sign-up")}>
+            <button
+              type="button"
+              onClick={() => setOperation("sign-up")}
+              className="cursor-pointer transition-colors hover:text-primary"
+            >
               New Here? Create Account
-            </span>
+            </button>
           ) : (
-            <span onClick={() => setOperation("login")}>
+            <button
+              type="button"
+              onClick={() => setOperation("login")}
+              className="cursor-pointer transition-colors hover:text-primary"
+            >
               Already have account? Login
-            </span>
+            </button>
           )}
         </div>
       </div>

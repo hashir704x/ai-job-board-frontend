@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 
 export default function CreateOrganization() {
   const [name, setName] = useState("");
@@ -39,7 +40,6 @@ export default function CreateOrganization() {
         onRequest: () => setIsLoading(true),
         onSuccess: () => {
           navigate("/app/employer-dashboard");
-
           setIsLoading(false);
         },
         onError: (ctx) => {
@@ -55,7 +55,7 @@ export default function CreateOrganization() {
     <div className="flex flex-col items-center justify-center min-h-[80vh] p-4">
       <form
         onSubmit={handleCreate}
-        className="max-w-sm w-full space-y-6 border p-8 rounded-xl bg-card"
+        className="max-w-sm w-full space-y-6 border p-8 rounded-xl bg-card transition-colors duration-300"
       >
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-bold">Register Organization</h1>
@@ -92,6 +92,7 @@ export default function CreateOrganization() {
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
           {isLoading ? "Creating..." : "Create Organization"}
         </Button>
       </form>

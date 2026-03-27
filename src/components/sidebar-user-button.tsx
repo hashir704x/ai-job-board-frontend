@@ -13,27 +13,27 @@ export default function SidebarUserButton() {
     .join("");
   return (
     <Link to="/app/user-profile">
-    <SidebarMenuButton
-      size="lg"
-      className="flex items-center gap-2 overflow-hidden bg-gray-200 cursor-pointer"
-    >
-      <Avatar className="rounded-lg size-8">
-        <AvatarImage src={imageSrc} alt={data?.user.name} />
-        <AvatarFallback className="uppercase bg-primary text-primary-foreground">
-          {nameInitials}
-        </AvatarFallback>
-      </Avatar>
+      <SidebarMenuButton
+        size="lg"
+        className="flex items-center gap-2 overflow-hidden bg-muted cursor-pointer"
+      >
+        <Avatar className="rounded-lg size-8">
+          <AvatarImage src={imageSrc} alt={data?.user.name} />
+          <AvatarFallback className="uppercase bg-primary text-primary-foreground">
+            {nameInitials}
+          </AvatarFallback>
+        </Avatar>
 
-      <div className="flex flex-col flex-1 min-w-0 leading-tight">
-        <span className="truncate text-sm font-semibold">
-          {data?.user.name}
-        </span>
-        <span className="truncate text-xs">{data?.user.email}</span>
-      </div>
-
-      
-    </SidebarMenuButton>
-      </Link>
+        <div className="flex flex-col flex-1 min-w-0 leading-tight">
+          <span className="truncate text-sm font-semibold">
+            {data?.user.name}
+          </span>
+          <span className="truncate text-xs text-muted-foreground">
+            {data?.user.email}
+          </span>
+        </div>
+      </SidebarMenuButton>
+    </Link>
   );
 }
 

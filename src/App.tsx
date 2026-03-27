@@ -17,7 +17,6 @@ import UpdateJob from "./pages/update-job";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 1,
     },
   },
@@ -36,7 +35,6 @@ const router = createBrowserRouter([
         path: "app",  
         element: <ProtectedLayout />,
         children: [
-          { index: true, element: <div>App</div> },
           {
             path: "user-profile",
             element: <UserProfile />,

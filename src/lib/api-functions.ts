@@ -27,9 +27,9 @@ type CreateJobPayload = {
   wage: number;
   wageInterval: "hourly" | "yearly";
   locationRequirement: "in-office" | "hybrid" | "remote";
-  status: "draft" | "delisted" | "published";
   type: "internship" | "part-time" | "full-time";
   experienceLevel: "junior" | "senior" | "mid-level";
+  isFeatured: boolean;
 };
 
 export async function createJob(payload: CreateJobPayload): Promise<string> {

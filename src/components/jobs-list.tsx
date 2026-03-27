@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getJobsForOrganization } from "@/lib/api-functions";
 import { Link } from "react-router";
+import PageLoader from "@/components/loading/page-loader";
 
 export default function JobsList({
   organizationId,
@@ -12,40 +13,64 @@ export default function JobsList({
     queryFn: getJobsForOrganization,
   });
 
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-center">Jobs List</h1>
+  if (isPending) {
+    return <PageLoader title="Jobs" message="Loading jobs..." size="md" />;
+  }
 
-      {isPending && (
-        <div className="text-center text-2xl animate-pulse">Loading...</div>
-      )}
-      {error && (
-        <div className="text-center text-2xl text-red-500">
-          Error: {error.message}
+  if (error) {
+    return (
+      <div className="mt-6 border rounded-xl p-8 bg-card text-center">
+        <div className="text-lg font-semibold text-destructive">
+          Error loading jobs
         </div>
-      )}
+        <div className="text-sm text-muted-foreground mt-2">{error.message}</div>
+        <div className="text-xs text-muted-foreground mt-2">
+          Try switching organization or refreshing the page.
+        </div>
+      </div>
+    );
+  }
 
-      <Link
-        to="/app/create-job"
-        className="text-blue-500 bg-blue-500/10 px-4 py-2 rounded-md border"
-      >
-        Create job
-      </Link>
-      
+  return (
+    <div className="mt-6">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold">Jobs</h2>
+        <Link to="/app/create-job">
+          <span className="inline-flex items-center justify-center rounded-lg border bg-primary/10 text-primary px-3 py-2 text-sm font-medium transition-colors hover:bg-primary/15">
+            Create job
+          </span>
+        </Link>
+      </div>
+
       {data?.length === 0 ? (
-        <div className="text-center text-2xl flex flex-col items-center justify-center gap-4">
-          <h1 className="text-2xl font-bold">No jobs found</h1>
+        <div className="mt-6 border rounded-xl p-8 bg-card text-center">
+          <div className="text-lg font-semibold">No jobs found</div>
+          <div className="text-sm text-muted-foreground mt-1">
+            Create your first listing to get started.
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
           {data?.map((job) => (
-            <Link to={`/app/job-details/${job.id}`} key={job.id} className="border p-4 rounded-md">
-              <h2 className="text-lg font-bold">{job.title}</h2>
-              <p className="text-sm text-gray-500">{job.type}</p>
-              <p className="text-sm text-gray-500">{job.status}</p>
-              <p className="text-sm text-gray-500">
-                {new Date(job.createdAt).toLocaleDateString()}
-              </p>
+            <Link
+              to={`/app/job-details/${job.id}`}
+              key={job.id}
+              className="border rounded-xl bg-card p-4 transition-all duration-200 hover:bg-accent hover:shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="text-base font-semibold leading-6 line-clamp-2">
+                  {job.title}
+                </h3>
+                <span className="text-xs px-2 py-1 rounded-md border bg-background text-muted-foreground">
+                  {job.status}
+                </span>
+              </div>
+              <div className="mt-2 text-sm text-muted-foreground">
+                {job.type || "—"}
+              </div>
+              <div className="mt-4 text-xs text-muted-foreground">
+                Created: {new Date(job.createdAt).toLocaleDateString()}
+              </div>
             </Link>
           ))}
         </div>
